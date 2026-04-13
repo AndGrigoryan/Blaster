@@ -12,6 +12,12 @@ class BLASTER_API ABlasterCharacter : public ACharacter
 public:
 	ABlasterCharacter();
 
+	UPROPERTY(VisibleAnyWhere, Category = "Camera")
+	TObjectPtr<class USpringArmComponent> CameraBoomComponent;
+
+	UPROPERTY(VisibleAnyWhere, Category = "Camera")
+	TObjectPtr<class UCameraComponent> FollowCameraComponent;
+
 protected:
 	virtual void BeginPlay() override;
 
