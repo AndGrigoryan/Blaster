@@ -27,6 +27,8 @@ ABlasterCharacter::ABlasterCharacter()
 	FollowCameraComponent->SetupAttachment(CameraBoomComponent, USpringArmComponent::SocketName);
 	FollowCameraComponent->bUsePawnControlRotation = false;
 
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 }
 
@@ -86,7 +88,7 @@ void ABlasterCharacter::OnLookGamepad(const FInputActionValue& Axis)
 
 void ABlasterCharacter::OnMove(const FInputActionValue& Axis)
 {
-	if (!IsValid(Controller) &&
+	if (!IsValid(Controller) ||
 		!IsValid(GetWorld()))
 	{
 		return;
@@ -94,9 +96,15 @@ void ABlasterCharacter::OnMove(const FInputActionValue& Axis)
 
 	TargetInput = Axis.Get<FVector2D>().GetSafeNormal();
 
+	const FRotator controlRotation = Controller->GetControlRotation();
+	const FRotator yawRotation(0.f, controlRotation.Yaw, 0.f);
+
+	const FVector forwardDirection = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
+	const FVector rightDirection = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y);
+
 	AddMovementInput(
-		GetActorForwardVector() * TargetInput.Y +
-		GetActorRightVector() * TargetInput.X,
+		forwardDirection * TargetInput.Y +
+		rightDirection * TargetInput.X,
 		1.f);
 }
 
