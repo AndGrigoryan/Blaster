@@ -13,6 +13,9 @@
 
 #include "Kismet/GameplayStatics.h"
 
+#include "Components/WidgetComponent.h"
+
+
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -29,6 +32,9 @@ ABlasterCharacter::ABlasterCharacter()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
+	OverheadWidgetComponent->SetupAttachment(RootComponent);
 
 }
 
