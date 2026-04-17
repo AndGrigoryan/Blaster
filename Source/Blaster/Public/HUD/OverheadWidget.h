@@ -18,7 +18,13 @@ public:
 	void SetDisplayText(const FText& InTextToDisplay);
 
 	UFUNCTION(BlueprintCallable)
-	void ShowPlayerNetRole(const APawn* InPawn);
+	void ShowPlayerNetRole(const APawn* InPawn, bool bShowLocalRole = true);
+
+	UFUNCTION(BlueprintCallable)
+	void ShowPlayerNetRole_Local(const APawn* InPawn);
+
+	UFUNCTION(BlueprintCallable)
+	void ShowPlayerNetRole_Remote(const APawn* InPawn);
 
 protected:
 	virtual void NativeDestruct() override;

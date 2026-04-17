@@ -37,6 +37,7 @@ void AWeaponBase::BeginPlay()
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnSphereOverlap);
+		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AWeaponBase::OnSphereEndOverlap);
 
 	}
 
@@ -44,6 +45,12 @@ void AWeaponBase::BeginPlay()
 	{
 		PickupWidget->SetVisibility(false);
 	}
+}
+
+void AWeaponBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
 }
 
 void AWeaponBase::OnSphereOverlap
@@ -60,14 +67,32 @@ void AWeaponBase::OnSphereOverlap
 
 	if (IsValid(blasterCharacter) && IsValid(PickupWidget))
 	{
-		PickupWidget->SetVisibility(true);
+		blasterCharacter->SetOverlappingWeapon(this);
 	}
 
 }
 
-void AWeaponBase::Tick(float DeltaTime)
+void AWeaponBase::OnSphereEndOverlap
+(
+	UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex
+)
 {
-	Super::Tick(DeltaTime);
+	ABlasterCharacter* blasterCharacter = Cast<ABlasterCharacter>(OtherActor);
 
+	if (IsValid(blasterCharacter) && IsValid(PickupWidget))
+	{
+		blasterCharacter->SetOverlappingWeapon(nullptr);
+	}
+}
+
+void AWeaponBase::ShowPickupWidget(bool bShowWidget)
+{
+	if (IsValid(PickupWidget))
+	{
+		PickupWidget->SetVisibility(bShowWidget);
+	}
 }
 

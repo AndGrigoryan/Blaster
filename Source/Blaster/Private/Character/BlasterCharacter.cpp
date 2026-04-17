@@ -15,6 +15,9 @@
 
 #include "Components/WidgetComponent.h"
 
+#include "Net/UnrealNetwork.h"
+
+#include "Weapon/WeaponBase.h"
 
 
 ABlasterCharacter::ABlasterCharacter()
@@ -35,6 +38,14 @@ ABlasterCharacter::ABlasterCharacter()
 
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
+
+}
+
+void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_AutonomousOnly);
 
 }
 
@@ -123,3 +134,33 @@ void ABlasterCharacter::OnCrouch()
 {
 }
 
+void ABlasterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
+{
+	if (IsValid(OverlappingWeapon))
+	{
+		OverlappingWeapon->ShowPickupWidget(false);
+	}
+
+	OverlappingWeapon = Weapon;
+
+	if (IsLocallyControlled())
+	{
+		if (IsValid(OverlappingWeapon))
+		{
+			OverlappingWeapon->ShowPickupWidget(true);
+		}
+	}
+}
+
+void ABlasterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastWeapon)
+{
+	if (IsValid(OverlappingWeapon))
+	{
+		OverlappingWeapon->ShowPickupWidget(true);
+		return;
+	}
+	if (IsValid(LastWeapon))
+	{
+		LastWeapon->ShowPickupWidget(false);
+	}
+}
