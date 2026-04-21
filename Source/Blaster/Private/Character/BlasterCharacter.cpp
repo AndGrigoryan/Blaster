@@ -103,6 +103,11 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInput->BindAction(InteractAction, ETriggerEvent::Started, this, &ABlasterCharacter::OnInteract);
 
+	PlayerInput->BindAction(PrimaryAction, ETriggerEvent::Started, this, &ABlasterCharacter::OnPrimaryActionStart);
+	PlayerInput->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &ABlasterCharacter::OnPrimaryActionEnd);
+
+	PlayerInput->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ABlasterCharacter::OnSecondaryActionStart);
+	PlayerInput->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &ABlasterCharacter::OnSecondaryActionEnd);
 }
 
 void ABlasterCharacter::OnLook(const FInputActionValue& Axis)
@@ -176,6 +181,30 @@ void ABlasterCharacter::OnInteract()
 	}
 }
 
+void ABlasterCharacter::OnPrimaryActionStart()
+{
+}
+
+void ABlasterCharacter::OnPrimaryActionEnd()
+{
+}
+
+void ABlasterCharacter::OnSecondaryActionStart()
+{
+	if (IsValid(CombatComponent))
+	{
+		CombatComponent->SetAiming(true);
+	}
+}
+
+void ABlasterCharacter::OnSecondaryActionEnd()
+{
+	if (IsValid(CombatComponent))
+	{
+		CombatComponent->SetAiming(false);
+	}
+}
+
 void ABlasterCharacter::OnServerInteract_Implementation()
 {
 	if (IsValid(CombatComponent))
@@ -218,4 +247,9 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastWeapon)
 bool ABlasterCharacter::IsWeaponEquipped()
 {
 	return (IsValid(CombatComponent) && IsValid(CombatComponent->EquippedWeapon));
+}
+
+bool ABlasterCharacter::IsAiming()
+{
+	return (IsValid(CombatComponent) && CombatComponent->bIsAiming);
 }

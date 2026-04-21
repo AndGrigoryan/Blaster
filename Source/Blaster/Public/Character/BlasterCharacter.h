@@ -50,6 +50,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
 	TObjectPtr<UInputAction> InteractAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
+	TObjectPtr<UInputAction> PrimaryAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
+	TObjectPtr<UInputAction> SecondaryAction;
 #pragma endregion
 
 
@@ -82,6 +88,18 @@ protected:
 
 	UFUNCTION()
 	void OnInteract();
+
+	UFUNCTION()
+	void OnPrimaryActionStart();
+
+	UFUNCTION()
+	void OnPrimaryActionEnd();
+
+	UFUNCTION()
+	void OnSecondaryActionStart();
+
+	UFUNCTION()
+	void OnSecondaryActionEnd();
 #pragma endregion
 
 public:
@@ -96,6 +114,8 @@ public:
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 
 	bool IsWeaponEquipped();
+
+	bool IsAiming();
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

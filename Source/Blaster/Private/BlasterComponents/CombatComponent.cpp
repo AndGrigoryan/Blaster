@@ -21,7 +21,7 @@ void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+
 }
 
 
@@ -36,6 +36,8 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+
+	DOREPLIFETIME(UCombatComponent, bIsAiming);
 
 }
 
@@ -63,5 +65,17 @@ void UCombatComponent::EquipWeapon(AWeaponBase* InWeaponToEquip)
 	}
 
 	EquippedWeapon->SetOwner(OwnerCharacter);
+}
+
+void UCombatComponent::SetAiming(bool bInIsAiming)
+{
+	this->bIsAiming = bInIsAiming;
+	ServerSetAiming(bIsAiming);
+
+}
+
+void UCombatComponent::ServerSetAiming_Implementation(bool bInIsAiming)
+{
+	bIsAiming = bInIsAiming;
 }
 

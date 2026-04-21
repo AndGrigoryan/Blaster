@@ -20,6 +20,9 @@ public:
 	UPROPERTY(Replicated)
 	TObjectPtr<AWeaponBase> EquippedWeapon;
 
+	UPROPERTY(Replicated)
+	bool bIsAiming;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -34,8 +37,13 @@ public:
 	UFUNCTION()
 	void EquipWeapon(AWeaponBase* InWeaponToEquip);
 
+	UFUNCTION()
+	void SetAiming(bool bInIsAiming);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetAiming(bool bInIsAiming);
+
 private:
 	TObjectPtr<ABlasterCharacter> OwnerCharacter;
-
 
 };
