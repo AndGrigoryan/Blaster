@@ -95,6 +95,8 @@ public:
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 
+	bool IsWeaponEquipped();
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UWidgetComponent> OverheadWidgetComponent;
@@ -110,6 +112,6 @@ private:
 	void OnRep_OverlappingWeapon(AWeaponBase* LastWeapon);
 
 	UFUNCTION(Server, Reliable)
-	void ServerOnInteractpButtonPressed();
+	void OnServerInteract();
 
 };

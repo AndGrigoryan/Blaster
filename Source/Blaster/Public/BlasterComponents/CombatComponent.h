@@ -17,12 +17,16 @@ class BLASTER_API UCombatComponent : public UActorComponent
 public:
 	UCombatComponent();
 
+	UPROPERTY(Replicated)
+	TObjectPtr<AWeaponBase> EquippedWeapon;
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
 	void Init(ABlasterCharacter* InOwnerCharacter);
@@ -33,6 +37,5 @@ public:
 private:
 	TObjectPtr<ABlasterCharacter> OwnerCharacter;
 
-	TObjectPtr<AWeaponBase> EquippedWeapon;
 
 };

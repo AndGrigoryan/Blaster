@@ -162,12 +162,12 @@ void ABlasterCharacter::OnInteract()
 		}
 		else
 		{
-			ServerOnInteractpButtonPressed();
+			OnServerInteract();
 		}
 	}
 }
 
-void ABlasterCharacter::ServerOnInteractpButtonPressed_Implementation()
+void ABlasterCharacter::OnServerInteract_Implementation()
 {
 	if (IsValid(CombatComponent))
 	{
@@ -204,4 +204,9 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastWeapon)
 	{
 		LastWeapon->ShowPickupWidget(false);
 	}
+}
+
+bool ABlasterCharacter::IsWeaponEquipped()
+{
+	return (IsValid(CombatComponent) && IsValid(CombatComponent->EquippedWeapon));
 }
