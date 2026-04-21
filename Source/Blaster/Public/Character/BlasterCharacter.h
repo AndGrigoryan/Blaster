@@ -47,6 +47,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
 	TObjectPtr<UInputAction> JumpAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
+	TObjectPtr<UInputAction> InteractAction;
 #pragma endregion
 
 
@@ -76,6 +79,9 @@ protected:
 
 	UFUNCTION()
 	void OnCrouch();
+
+	UFUNCTION()
+	void OnInteract();
 #pragma endregion
 
 public:
@@ -85,6 +91,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void PostInitializeComponents() override;
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 
@@ -95,6 +102,12 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	TObjectPtr<AWeaponBase> OverlappingWeapon;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UCombatComponent> CombatComponent;
+
+
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastWeapon);
+
+
 };

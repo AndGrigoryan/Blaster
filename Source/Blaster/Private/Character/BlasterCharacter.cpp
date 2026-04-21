@@ -19,6 +19,8 @@
 
 #include "Weapon/WeaponBase.h"
 
+#include "BlasterComponents/CombatComponent.h"
+
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -39,6 +41,9 @@ ABlasterCharacter::ABlasterCharacter()
 	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidgetComponent"));
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
 
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	CombatComponent->SetIsReplicated(true);
+
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -46,6 +51,17 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_AutonomousOnly);
+
+}
+
+void ABlasterCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (IsValid(CombatComponent))
+	{
+		CombatComponent->Init(this);
+	}
 
 }
 
@@ -83,6 +99,8 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInput->BindAction(CrouchAction, ETriggerEvent::Started, this, &ABlasterCharacter::OnCrouch);
 
 	PlayerInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ABlasterCharacter::OnJump);
+
+	PlayerInput->BindAction(InteractAction, ETriggerEvent::Started, this, &ABlasterCharacter::OnInteract);
 
 }
 
@@ -132,6 +150,14 @@ void ABlasterCharacter::OnJump()
 
 void ABlasterCharacter::OnCrouch()
 {
+}
+
+void ABlasterCharacter::OnInteract()
+{
+	if (IsValid(CombatComponent) && HasAuthority())
+	{
+		CombatComponent->EquipWeapon(OverlappingWeapon);
+	}
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
