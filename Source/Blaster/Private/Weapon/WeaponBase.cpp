@@ -5,6 +5,10 @@
 
 #include "Character/BlasterCharacter.h"
 
+#include "Net/UnrealNetwork.h"
+
+#include "Kismet/KismetSystemLibrary.h"
+
 
 AWeaponBase::AWeaponBase()
 {
@@ -53,13 +57,20 @@ void AWeaponBase::Tick(float DeltaTime)
 
 }
 
+void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeaponBase, WeaponState);
+}
+
 void AWeaponBase::OnSphereOverlap
 (
-	UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp, 
-	int32 OtherBodyIndex, 
-	bool bFromSweep, 
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
 	const FHitResult& SweepResult
 )
 {
@@ -74,9 +85,9 @@ void AWeaponBase::OnSphereOverlap
 
 void AWeaponBase::OnSphereEndOverlap
 (
-	UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp, 
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex
 )
 {
@@ -93,6 +104,29 @@ void AWeaponBase::ShowPickupWidget(bool bShowWidget)
 	if (IsValid(PickupWidget))
 	{
 		PickupWidget->SetVisibility(bShowWidget);
+	}
+}
+
+void AWeaponBase::SetWeaponState(EWeaponState State)
+{
+	WeaponState = State;
+
+	switch (WeaponState)
+	{
+	case EWeaponState::EWS_Equipped:
+		ShowPickupWidget(false);
+		GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+	}
+}
+
+void AWeaponBase::OnRep_WeaponState()
+{
+	switch (WeaponState)
+	{
+	case EWeaponState::EWS_Equipped:
+		ShowPickupWidget(false);
+		break;
 	}
 }
 

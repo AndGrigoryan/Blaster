@@ -6,6 +6,7 @@
 
 #include "Engine/SKeletalMeshSocket.h"
 
+#include "Components/SphereComponent.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -52,6 +53,5 @@ void UCombatComponent::EquipWeapon(AWeaponBase* InWeaponToEquip)
 	}
 
 	EquippedWeapon->SetOwner(OwnerCharacter);
-	EquippedWeapon->ShowPickupWidget(false);
 }
 

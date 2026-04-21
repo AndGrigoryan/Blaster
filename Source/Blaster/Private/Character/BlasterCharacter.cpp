@@ -154,7 +154,22 @@ void ABlasterCharacter::OnCrouch()
 
 void ABlasterCharacter::OnInteract()
 {
-	if (IsValid(CombatComponent) && HasAuthority())
+	if (IsValid(CombatComponent))
+	{
+		if (HasAuthority())
+		{
+			CombatComponent->EquipWeapon(OverlappingWeapon);
+		}
+		else
+		{
+			ServerOnInteractpButtonPressed();
+		}
+	}
+}
+
+void ABlasterCharacter::ServerOnInteractpButtonPressed_Implementation()
+{
+	if (IsValid(CombatComponent))
 	{
 		CombatComponent->EquipWeapon(OverlappingWeapon);
 	}

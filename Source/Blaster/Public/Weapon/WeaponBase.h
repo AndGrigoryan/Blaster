@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+class USphereComponent;
+
 UENUM()
 enum class EWeaponState : uint8
 {
@@ -49,21 +51,28 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void ShowPickupWidget(bool bShowWidget);
 
-	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
+	void SetWeaponState(EWeaponState State);
+
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	TObjectPtr<class USphereComponent> AreaSphere;
+	TObjectPtr<USphereComponent> AreaSphere;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<class UWidgetComponent> PickupWidget;
 
+
+	UFUNCTION()
+	void OnRep_WeaponState();
 };
