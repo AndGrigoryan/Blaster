@@ -2,6 +2,8 @@
 
 #include "Character/BlasterCharacter.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+
 #include "Weapon/WeaponBase.h"
 
 #include "Engine/SKeletalMeshSocket.h"
@@ -65,6 +67,9 @@ void UCombatComponent::EquipWeapon(AWeaponBase* InWeaponToEquip)
 	}
 
 	EquippedWeapon->SetOwner(OwnerCharacter);
+
+	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
+	OwnerCharacter->bUseControllerRotationYaw = true;
 }
 
 void UCombatComponent::SetAiming(bool bInIsAiming)
@@ -77,5 +82,14 @@ void UCombatComponent::SetAiming(bool bInIsAiming)
 void UCombatComponent::ServerSetAiming_Implementation(bool bInIsAiming)
 {
 	bIsAiming = bInIsAiming;
+
 }
 
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	if (IsValid(EquippedWeapon) && IsValid(OwnerCharacter))
+	{
+		OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
+		OwnerCharacter->bUseControllerRotationYaw = true;
+	}
+}
