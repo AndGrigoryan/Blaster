@@ -30,7 +30,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bIsInAir = BlasterCharacter->GetCharacterMovement()->IsFalling();
 
-	bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
+	bIsAccelerating = Speed > 3.f && !bIsInAir;
 
 	bWeaponEquipped = BlasterCharacter->IsWeaponEquipped();
 

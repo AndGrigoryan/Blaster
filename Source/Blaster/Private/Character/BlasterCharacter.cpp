@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Components/WidgetComponent.h"
+#include "Components/CapsuleComponent.h"
 
 #include "Net/UnrealNetwork.h"
 
@@ -45,6 +46,9 @@ ABlasterCharacter::ABlasterCharacter()
 	CombatComponent->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
