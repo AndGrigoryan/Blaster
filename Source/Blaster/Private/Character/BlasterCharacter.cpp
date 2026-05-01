@@ -12,6 +12,7 @@
 #include "InputMappingContext.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -80,6 +81,45 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	AimOffseet(DeltaTime);
+}
+
+void ABlasterCharacter::AimOffseet(float DeltaTime)
+{
+	if (IsValid(CombatComponent) && !IsValid(CombatComponent->EquippedWeapon))
+	{
+		return;
+	}
+
+	FVector velocity = GetVelocity();
+	velocity.Z = 0.f;
+
+	float speed = velocity.Size();
+
+	bool bisInAir = GetCharacterMovement()->IsFalling();
+
+	// standing still, not jumping
+	if (speed == 0.f && !bisInAir)
+	{
+		FRotator currentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		FRotator deltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(currentAimRotation, StartingAimRotation);
+
+		AO_Yaw = deltaAimRotation.Yaw;
+
+		bUseControllerRotationYaw = false;
+	}
+
+	// running or jumping
+	if (speed > 0.f || bisInAir)
+	{
+		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+
+		AO_Yaw = 0.f;
+	 	
+		bUseControllerRotationYaw = true;
+	}
+
+	AO_Pitch = GetBaseAimRotation().Pitch;
 }
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -100,7 +100,12 @@ protected:
 
 	UFUNCTION()
 	void OnSecondaryActionEnd();
+
 #pragma endregion
+
+
+	UFUNCTION()
+	void AimOffseet(float DeltaTime);
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -117,6 +122,9 @@ public:
 
 	bool IsAiming();
 
+	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
+	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UWidgetComponent> OverheadWidgetComponent;
@@ -127,6 +135,11 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UCombatComponent> CombatComponent;
 
+	float AO_Yaw;
+
+	float AO_Pitch;
+
+	FRotator StartingAimRotation;
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastWeapon);
