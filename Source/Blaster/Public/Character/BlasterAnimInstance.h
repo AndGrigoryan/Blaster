@@ -21,6 +21,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class ABlasterCharacter> BlasterCharacter;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class AWeaponBase> EquippedWeapon;
+
+#pragma region Movement
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float Speed;
 
@@ -44,8 +48,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float Lean;;
+#pragma endregion
 
-
+#pragma region Aim Offset
 	FRotator CharacterRotationLastFrame;
 
 	FRotator CharacterRotation;
@@ -58,4 +63,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Aim Offset", meta = (AllowPrivateAccess = "true"))
 	float AO_Pitch;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Aim Offset", meta = (AllowPrivateAccess = "true"))
+	FTransform LeftHandTransform;
+#pragma endregion
 };

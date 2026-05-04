@@ -305,3 +305,13 @@ bool ABlasterCharacter::IsAiming()
 {
 	return (IsValid(CombatComponent) && CombatComponent->bIsAiming);
 }
+
+AWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
+{
+	if (!IsValid(CombatComponent))
+	{
+		return nullptr;
+	}
+
+	return CombatComponent->EquippedWeapon;
+}
