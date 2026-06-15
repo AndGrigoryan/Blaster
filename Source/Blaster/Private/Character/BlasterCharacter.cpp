@@ -88,41 +88,50 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 void ABlasterCharacter::AimOffseet(float DeltaTime)
 {
-	if (IsValid(CombatComponent) && !IsValid(CombatComponent->EquippedWeapon))
+	if (!IsValid(CombatComponent) || !IsValid(CombatComponent->EquippedWeapon))
 	{
+		AO_Yaw = 0.f;
+		InterpAO_Yaw = 0.f;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 		return;
 	}
 
 	FVector velocity = GetVelocity();
 	velocity.Z = 0.f;
 
-	float speed = velocity.Size();
+	const float speed = velocity.Size();
 
-	bool bisInAir = GetCharacterMovement()->IsFalling();
+	const bool bisInAir = GetCharacterMovement()->IsFalling();
+
+	const bool bisStandingStill = speed < 3.f;
 
 	// standing still, not jumping
-	if (speed == 0.f && !bisInAir)
+	if (bisStandingStill && !bisInAir)
 	{
 		FRotator currentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		FRotator deltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(currentAimRotation, StartingAimRotation);
 
 		AO_Yaw = deltaAimRotation.Yaw;
 
-		bUseControllerRotationYaw = false;
+		//if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
+		//{
+		//	InterpAO_Yaw = AO_Yaw;
+		//}
 
-		TurnInPlace(DeltaTime);
+		bUseControllerRotationYaw = true;
+
+		//TurnInPlace(DeltaTime);
 	}
-
-	// running or jumping
-	if (speed > 0.f || bisInAir)
+	else  // running or jumping
 	{
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 
 		AO_Yaw = 0.f;
+		InterpAO_Yaw = 0.f;
 
 		bUseControllerRotationYaw = true;
 
-		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		//TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
 
 	AO_Pitch = GetBaseAimRotation().Pitch;
@@ -141,13 +150,25 @@ void ABlasterCharacter::TurnInPlace(float DeltaTime)
 	if (AO_Yaw > 90.f)
 	{
 		TurningInPlace = ETurningInPlace::ETIP_Right;
-		return;
 	}
-
-	if (AO_Yaw < -90.f)
+	else if (AO_Yaw < -90.f)
 	{
 		TurningInPlace = ETurningInPlace::ETIP_Left;
-		return;
+	}
+
+	if (TurningInPlace != ETurningInPlace::ETIP_NotTurning)
+	{
+		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 10.f);
+		AO_Yaw = InterpAO_Yaw;
+
+		if (FMath::Abs(AO_Yaw) < 15.f)
+		{
+			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+
+			AO_Yaw = 0.f;
+			InterpAO_Yaw = 0.f;
+		}
 	}
 }
 

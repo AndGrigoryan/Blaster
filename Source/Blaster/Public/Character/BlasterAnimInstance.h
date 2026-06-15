@@ -69,6 +69,9 @@ private:
 	FTransform LeftHandTransform;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Aim Offset", meta = (AllowPrivateAccess = "true"))
-	ETurningInPlace TurningInPlace;
+	ETurningInPlace TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Aim Offset", meta = (AllowPrivateAccess = "true"))
+	bool bIsTurningInPlace;
 #pragma endregion
 };
