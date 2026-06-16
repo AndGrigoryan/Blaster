@@ -9,6 +9,9 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Animation/AnimationAsset.h"
+
+#include "Components/SkeletalMeshComponent.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -117,6 +120,14 @@ void AWeaponBase::SetWeaponState(EWeaponState State)
 		ShowPickupWidget(false);
 		GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
+	}
+}
+
+void AWeaponBase::Fire()
+{
+	if (IsValid(FireAnimation))
+	{
+		WeaponMesh->PlayAnimation(FireAnimation, false);
 	}
 }
 
