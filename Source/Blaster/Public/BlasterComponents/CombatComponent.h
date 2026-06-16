@@ -51,7 +51,11 @@ public:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	UFUNCTION()
+	void FireButtonPressed(bool bPressed);
+
 private:
 	TObjectPtr<ABlasterCharacter> OwnerCharacter;
 
+	bool bFireButtonPressed;
 };

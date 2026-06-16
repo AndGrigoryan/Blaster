@@ -132,6 +132,9 @@ public:
 	UFUNCTION()
 	AWeaponBase* GetEquippedWeapon() const;
 
+	UFUNCTION()
+	void PlayFireMontage(bool bIsAiming);
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UWidgetComponent> OverheadWidgetComponent;
@@ -141,6 +144,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UCombatComponent> CombatComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<class UAnimMontage> FireWeaponMontage;
 
 	float AO_Yaw;
 

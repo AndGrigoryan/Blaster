@@ -23,6 +23,8 @@
 
 #include "BlasterComponents/CombatComponent.h"
 
+#include "Character/BlasterAnimInstance.h"
+
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -53,8 +55,8 @@ ABlasterCharacter::ABlasterCharacter()
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 
-	NetUpdateFrequency = 66.f;
-	MinNetUpdateFrequency = 33.f;
+	SetNetUpdateFrequency(66.f);
+	SetMinNetUpdateFrequency(33.f);
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -280,10 +282,18 @@ void ABlasterCharacter::OnInteract()
 
 void ABlasterCharacter::OnPrimaryActionStart()
 {
+	if (IsValid(CombatComponent))
+	{
+		CombatComponent->FireButtonPressed(true);
+	}
 }
 
 void ABlasterCharacter::OnPrimaryActionEnd()
 {
+	if (IsValid(CombatComponent))
+	{
+		CombatComponent->FireButtonPressed(false);
+	}
 }
 
 void ABlasterCharacter::OnSecondaryActionStart()
@@ -359,4 +369,31 @@ AWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
 	}
 
 	return CombatComponent->EquippedWeapon;
+}
+
+void ABlasterCharacter::PlayFireMontage(bool bIsAiming)
+{
+	if 
+	(
+		!IsValid(CombatComponent) ||
+		!IsValid(CombatComponent->EquippedWeapon)
+	)
+	{
+		return;
+	}
+
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+
+	if
+	(
+			IsValid(animInstance) &&
+			IsValid(FireWeaponMontage)
+	)
+	{
+		animInstance->Montage_Play(FireWeaponMontage);
+		FName sectionName = bIsAiming ? FName("RifleAim") : FName("RifleHip");
+		animInstance->Montage_JumpToSection(sectionName);
+		
+	}
+
 }
