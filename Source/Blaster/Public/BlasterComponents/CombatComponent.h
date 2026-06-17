@@ -5,6 +5,8 @@
 #include "CombatComponent.generated.h"
 
 
+#define TRACE_LENGTH 80000.f
+
 class ABlasterCharacter;
 
 class AWeaponBase;
@@ -59,6 +61,9 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire();
+
+	UFUNCTION()
+	void TraceUnderCrosshairs(FHitResult& OutTraceHitResult);
 
 private:
 	TObjectPtr<ABlasterCharacter> OwnerCharacter;

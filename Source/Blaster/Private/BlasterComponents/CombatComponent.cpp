@@ -12,9 +12,15 @@
 
 #include "Net/UnrealNetwork.h"
 
+#include "Kismet/GameplayStatics.h"
+
+#include "DrawDebugHelpers.h"
+
+
+
 UCombatComponent::UCombatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	BaseWalkSpeed = 600.f;
 
@@ -43,6 +49,10 @@ void UCombatComponent::BeginPlay()
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FHitResult hitRes;
+	TraceUnderCrosshairs(hitRes);
+
 }
 
 void UCombatComponent::Init(ABlasterCharacter* InOwnerCharacter)
@@ -130,4 +140,58 @@ void UCombatComponent::MulticastFire_Implementation()
 
 	OwnerCharacter->PlayFireMontage(bIsAiming);
 	EquippedWeapon->Fire();
+}
+
+void UCombatComponent::TraceUnderCrosshairs(FHitResult& OutTraceHitResult)
+{
+	FVector2D viewportSize;
+
+	if (IsValid(GEngine) && IsValid(GEngine->GameViewport))
+	{
+		GEngine->GameViewport->GetViewportSize(viewportSize);
+	}
+
+	FVector2D crosshairLocation(viewportSize.X / 2.f, viewportSize.Y / 2.f);
+
+	FVector crosshairWorldPosition;
+	FVector crosshairWorldDirection;
+
+	bool bscreenToWorld = UGameplayStatics::DeprojectScreenToWorld
+	(
+		UGameplayStatics::GetPlayerController(this, 0),
+		crosshairLocation,
+		crosshairWorldPosition,
+		crosshairWorldDirection
+	);
+
+	if (bscreenToWorld)
+	{
+		FVector start = crosshairWorldPosition;
+
+		FVector end = start + crosshairWorldDirection * TRACE_LENGTH;
+
+		GetWorld()->LineTraceSingleByChannel
+		(
+			OutTraceHitResult,
+			start,
+			end,
+			ECollisionChannel::ECC_Visibility
+		);
+
+		if (!OutTraceHitResult.bBlockingHit)
+		{
+			OutTraceHitResult.ImpactPoint = end;
+		}
+		else
+		{
+			DrawDebugSphere
+			(
+				GetWorld(),
+				OutTraceHitResult.ImpactPoint,
+				12.f,
+				12,
+				FColor::Red
+			);
+		}
+	}
 }
