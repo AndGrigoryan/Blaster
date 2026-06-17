@@ -9,6 +9,11 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 {
 	Super::Fire(HitTarget);
 
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	APawn* instigatorPawn = Cast<APawn>(GetOwner());
 
 	if (!IsValid(instigatorPawn))
