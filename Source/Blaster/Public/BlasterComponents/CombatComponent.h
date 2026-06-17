@@ -69,4 +69,6 @@ private:
 	TObjectPtr<ABlasterCharacter> OwnerCharacter;
 
 	bool bFireButtonPressed;
+
+	FVector HitTarget;
 };
