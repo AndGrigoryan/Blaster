@@ -19,26 +19,6 @@ UCombatComponent::UCombatComponent()
 	BaseWalkSpeed = 600.f;
 
 	AimWalkSpeed = 450.f;
-
-}
-
-
-void UCombatComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (IsValid(OwnerCharacter))
-	{
-		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	}
-
-}
-
-
-void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -48,7 +28,21 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 
 	DOREPLIFETIME(UCombatComponent, bIsAiming);
+}
 
+void UCombatComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (IsValid(OwnerCharacter))
+	{
+		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	}
+}
+
+void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 void UCombatComponent::Init(ABlasterCharacter* InOwnerCharacter)
@@ -88,7 +82,6 @@ void UCombatComponent::SetAiming(bool bInIsAiming)
 	{
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
 	}
-
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bInIsAiming)
@@ -98,7 +91,6 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bInIsAiming)
 	{
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
 	}
-
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
@@ -114,18 +106,28 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 {
 	bFireButtonPressed = bPressed;
 
-	if 
-	(
+	if (bFireButtonPressed)
+	{
+		ServerFire();
+	}
+}
+
+void UCombatComponent::ServerFire_Implementation()
+{
+	MulticastFire();
+}
+
+void UCombatComponent::MulticastFire_Implementation()
+{
+	if
+		(
 		!IsValid(OwnerCharacter) ||
 		!IsValid(EquippedWeapon)
-	)
+		)
 	{
 		return;
 	}
 
-	if (bFireButtonPressed)
-	{
-		OwnerCharacter->PlayFireMontage(bIsAiming);
-		EquippedWeapon->Fire();
-	}
+	OwnerCharacter->PlayFireMontage(bIsAiming);
+	EquippedWeapon->Fire();
 }

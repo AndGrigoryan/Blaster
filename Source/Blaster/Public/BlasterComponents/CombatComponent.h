@@ -54,6 +54,12 @@ public:
 	UFUNCTION()
 	void FireButtonPressed(bool bPressed);
 
+	UFUNCTION(Server, Reliable)
+	void ServerFire();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastFire();
+
 private:
 	TObjectPtr<ABlasterCharacter> OwnerCharacter;
 
