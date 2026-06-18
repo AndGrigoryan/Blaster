@@ -8,15 +8,27 @@ UCLASS()
 class BLASTER_API AProjectile : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	AProjectile();
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+	UFUNCTION()
+	virtual void OnHit
+	(
+		UPrimitiveComponent* HitComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		FVector NormalImpulse,
+		const FHitResult& Hit
+	);
+
+public:
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void Destroyed() override;
 
 private:
 
@@ -30,5 +42,11 @@ private:
 	TObjectPtr<class UParticleSystem> Tracer;
 
 	TObjectPtr<class UParticleSystemComponent> TracerComponent;
+
+	UPROPERTY(EditAnyWhere)
+	TObjectPtr<UParticleSystem> ImpactParticles;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class USoundCue> ImpactSound;
 
 };
