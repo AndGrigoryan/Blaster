@@ -13,6 +13,13 @@
 
 #include "Components/SkeletalMeshComponent.h"
 
+#include "Weapon/Casing.h"
+
+#include "Engine/SkeletalMeshSocket.h"
+
+
+
+
 AWeaponBase::AWeaponBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -116,18 +123,47 @@ void AWeaponBase::SetWeaponState(EWeaponState State)
 
 	switch (WeaponState)
 	{
-	case EWeaponState::EWS_Equipped:
-		ShowPickupWidget(false);
-		GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		break;
+		case EWeaponState::EWS_Equipped:
+			ShowPickupWidget(false);
+			GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			break;
 	}
 }
 
 void AWeaponBase::Fire(const FVector& HitTarget)
 {
+	if (!IsValid(WeaponMesh))
+	{
+		return;
+	}
+
 	if (IsValid(FireAnimation))
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
+	}
+
+	if (IsValid(CasingClass))
+	{
+		const USkeletalMeshSocket* ammoEjectSocket = WeaponMesh->GetSocketByName(FName("AmmoEject"));
+
+		if (ammoEjectSocket == nullptr)
+		{
+			return;
+		}
+
+		FTransform socketTransform = ammoEjectSocket->GetSocketTransform(WeaponMesh);
+
+		UWorld* world = GetWorld();
+
+		if (IsValid(world))
+		{
+			world->SpawnActor<ACasing>
+				(
+				CasingClass,
+				socketTransform.GetLocation(),
+				socketTransform.GetRotation().Rotator()
+				);
+		}
 	}
 }
 
@@ -135,9 +171,9 @@ void AWeaponBase::OnRep_WeaponState()
 {
 	switch (WeaponState)
 	{
-	case EWeaponState::EWS_Equipped:
-		ShowPickupWidget(false);
-		break;
+		case EWeaponState::EWS_Equipped:
+			ShowPickupWidget(false);
+			break;
 	}
 }
 

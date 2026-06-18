@@ -80,6 +80,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<class UAnimationAsset> FireAnimation;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	TSubclassOf<class ACasing> CasingClass;
 
 
 	UFUNCTION()
