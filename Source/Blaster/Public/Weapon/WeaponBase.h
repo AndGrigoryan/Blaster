@@ -6,6 +6,8 @@
 
 class USphereComponent;
 
+class UTexture2D;
+
 UENUM()
 enum class EWeaponState : uint8
 {
@@ -24,6 +26,24 @@ class BLASTER_API AWeaponBase : public AActor
 	
 public:	
 	AWeaponBase();
+
+	/*
+	* Textures for the weapon crosshairs
+	*/
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	TObjectPtr<UTexture2D> CrosshairCenter;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	TObjectPtr<UTexture2D> CrosshairLeft;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	TObjectPtr<UTexture2D> CrosshairRight;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	TObjectPtr<UTexture2D> CrosshairTop;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	TObjectPtr<UTexture2D> CrosshairBottom;
 
 protected:
 	virtual void BeginPlay() override;
@@ -62,7 +82,6 @@ public:
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
-
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")

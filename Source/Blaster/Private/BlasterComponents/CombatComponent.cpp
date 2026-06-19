@@ -16,7 +16,9 @@
 
 #include "DrawDebugHelpers.h"
 
+#include "PlayerController/BlasterPlayerController.h"
 
+#include "HUD/BlasterHUD.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -50,6 +52,50 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	SetHUDCrosshairs(DeltaTime);
+}
+
+void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
+{
+	if (!IsValid(OwnerCharacter) ||
+		!IsValid(OwnerCharacter->Controller))
+	{
+		return;
+	}
+
+	if (!IsValid(Controller))
+	{
+		Controller = Cast<ABlasterPlayerController>(OwnerCharacter->Controller);
+	} 
+
+	if (IsValid(Controller))
+	{
+		if (!IsValid(HUD))
+		{
+			HUD = Cast<ABlasterHUD>(Controller->GetHUD());
+			if (IsValid(HUD))
+			{
+				FHUDPackage HUDPackage;
+				if(IsValid(EquippedWeapon))
+				{
+					HUDPackage.CrosshairCenter = EquippedWeapon->CrosshairCenter;
+					HUDPackage.CrosshairLeft = EquippedWeapon->CrosshairLeft;
+					HUDPackage.CrosshairRight = EquippedWeapon->CrosshairRight;
+					HUDPackage.CrosshairTop = EquippedWeapon->CrosshairTop;
+					HUDPackage.CrosshairBottom = EquippedWeapon->CrosshairBottom;
+				}
+				else
+				{
+					HUDPackage.CrosshairCenter = nullptr;
+					HUDPackage.CrosshairLeft = nullptr;
+					HUDPackage.CrosshairRight = nullptr;
+					HUDPackage.CrosshairTop = nullptr;
+					HUDPackage.CrosshairBottom = nullptr;
+				}
+				HUD->SetHUDPackage(HUDPackage);
+			}
+		}
+	}
 }
 
 void UCombatComponent::Init(ABlasterCharacter* InOwnerCharacter)

@@ -11,6 +11,10 @@ class ABlasterCharacter;
 
 class AWeaponBase;
 
+class ABlasterPlayerController;
+
+class ABlasterHUD;
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class BLASTER_API UCombatComponent : public UActorComponent
 {
@@ -65,8 +69,15 @@ public:
 	UFUNCTION()
 	void TraceUnderCrosshairs(FHitResult& OutTraceHitResult);
 
+	UFUNCTION()
+	void SetHUDCrosshairs(float DeltaTime);
+
 private:
 	TObjectPtr<ABlasterCharacter> OwnerCharacter;
+
+	TObjectPtr<ABlasterPlayerController> Controller;
+
+	TObjectPtr<ABlasterHUD> HUD;
 
 	bool bFireButtonPressed;
 };
