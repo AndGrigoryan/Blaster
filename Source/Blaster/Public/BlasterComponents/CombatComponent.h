@@ -80,4 +80,11 @@ private:
 	TObjectPtr<ABlasterHUD> HUD;
 
 	bool bFireButtonPressed;
+
+	/*
+	* HUD and crosshairs
+	*/
+
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
 };
