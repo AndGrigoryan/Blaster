@@ -64,9 +64,9 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	AO_Pitch = BlasterCharacter->GetAO_Pitch();
 
-	if (bWeaponEquipped && 
-		IsValid(EquippedWeapon) && 
-		IsValid(EquippedWeapon->GetWeaponMesh()) && 
+	if (bWeaponEquipped &&
+		IsValid(EquippedWeapon) &&
+		IsValid(EquippedWeapon->GetWeaponMesh()) &&
 		IsValid(BlasterCharacter->GetMesh()))
 	{
 		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
@@ -76,14 +76,29 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 		BlasterCharacter->GetMesh()->TransformToBoneSpace
 		(
-			FName("hand_r"), 
-			LeftHandTransform.GetLocation(), 
-			FRotator::ZeroRotator, 
-			outPosition, 
+			FName("hand_r"),
+			LeftHandTransform.GetLocation(),
+			FRotator::ZeroRotator,
+			outPosition,
 			outRotation
 		);
 
 		LeftHandTransform.SetLocation(outPosition);
-		LeftHandTransform.SetRotation(FQuat(outRotation)); 
+		LeftHandTransform.SetRotation(FQuat(outRotation));
+
+		if(BlasterCharacter->IsLocallyControlled())
+		{
+			bLocallyControlled = true;
+			FTransform rightHandTransform = BlasterCharacter->
+				GetMesh()->
+				GetSocketTransform(
+				FName("hand_r"),
+				ERelativeTransformSpace::RTS_World);
+
+			RightHandRotation = UKismetMathLibrary::FindLookAtRotation(
+				rightHandTransform.GetLocation(),
+				rightHandTransform.GetLocation() + (rightHandTransform.GetLocation() - BlasterCharacter->GetHitTarget()));
+		}
+
 	}
 }

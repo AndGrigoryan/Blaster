@@ -361,6 +361,15 @@ bool ABlasterCharacter::IsAiming()
 	return (IsValid(CombatComponent) && CombatComponent->bIsAiming);
 }
 
+FVector ABlasterCharacter::GetHitTarget() const
+{
+	if (!IsValid(CombatComponent))
+	{
+		return FVector();
+	}
+	return CombatComponent->HitTarget;
+}
+
 AWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
 {
 	if (!IsValid(CombatComponent))

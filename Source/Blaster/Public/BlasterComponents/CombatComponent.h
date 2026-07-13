@@ -34,6 +34,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed;
+
+	UPROPERTY()
+	FVector HitTarget;
 protected:
 	virtual void BeginPlay() override;
 
@@ -87,4 +90,5 @@ private:
 
 	float CrosshairVelocityFactor;
 	float CrosshairInAirFactor;
+
 };
