@@ -163,6 +163,9 @@ private:
 
 	ETurningInPlace TurningInPlace;
 
+	UPROPERTY(EditAnywhere)
+	float CameraThreshold = 200.f;
+
 	UFUNCTION()
 	void TurnInPlace(float DeltaTime);
 
@@ -172,4 +175,6 @@ private:
 	UFUNCTION(Server, Reliable)
 	void OnServerInteract();
 
+	UFUNCTION()
+	void HideCameraIfCharacterClose();
 };

@@ -91,6 +91,8 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffseet(DeltaTime);
+
+	HideCameraIfCharacterClose();
 }
 
 void ABlasterCharacter::AimOffseet(float DeltaTime)
@@ -353,6 +355,42 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastWeapon)
 	}
 }
 
+void ABlasterCharacter::HideCameraIfCharacterClose()
+{
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
+	if ((FollowCameraComponent->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
+	{
+		GetMesh()->SetVisibility(false);
+		if
+		(
+			IsValid(CombatComponent) &&
+			IsValid(CombatComponent->EquippedWeapon) &&
+			IsValid(CombatComponent->EquippedWeapon->GetWeaponMesh())
+		)
+		{
+			CombatComponent->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
+		}
+	}
+	else
+	{
+		GetMesh()->SetVisibility(true);
+		if
+			(
+			IsValid(CombatComponent) &&
+			IsValid(CombatComponent->EquippedWeapon) &&
+			IsValid(CombatComponent->EquippedWeapon->GetWeaponMesh())
+			)
+		{
+			CombatComponent->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
+		}
+	}
+
+}
+
 bool ABlasterCharacter::IsWeaponEquipped()
 {
 	return (IsValid(CombatComponent) && IsValid(CombatComponent->EquippedWeapon));
@@ -384,11 +422,11 @@ AWeaponBase* ABlasterCharacter::GetEquippedWeapon() const
 
 void ABlasterCharacter::PlayFireMontage(bool bIsAiming)
 {
-	if 
-	(
+	if
+		(
 		!IsValid(CombatComponent) ||
 		!IsValid(CombatComponent->EquippedWeapon)
-	)
+		)
 	{
 		return;
 	}
@@ -396,15 +434,15 @@ void ABlasterCharacter::PlayFireMontage(bool bIsAiming)
 	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
 
 	if
-	(
-			IsValid(animInstance) &&
-			IsValid(FireWeaponMontage)
-	)
+		(
+		IsValid(animInstance) &&
+		IsValid(FireWeaponMontage)
+		)
 	{
 		animInstance->Montage_Play(FireWeaponMontage);
 		FName sectionName = bIsAiming ? FName("RifleAim") : FName("RifleHip");
 		animInstance->Montage_JumpToSection(sectionName);
-		
+
 	}
 
 }
