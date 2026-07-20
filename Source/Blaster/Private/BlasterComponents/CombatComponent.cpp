@@ -18,8 +18,6 @@
 
 #include "PlayerController/BlasterPlayerController.h"
 
-#include "HUD/BlasterHUD.h"
-
 #include "Camera/CameraComponent.h"
 
 
@@ -101,7 +99,6 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 		return;
 	}
 
-	FHUDPackage HUDPackage{};
 	if (IsValid(EquippedWeapon))
 	{
 		HUDPackage.CrosshairCenter = EquippedWeapon->CrosshairCenter;
@@ -109,6 +106,14 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 		HUDPackage.CrosshairRight = EquippedWeapon->CrosshairRight;
 		HUDPackage.CrosshairTop = EquippedWeapon->CrosshairTop;
 		HUDPackage.CrosshairBottom = EquippedWeapon->CrosshairBottom;
+	}
+	else
+	{
+		HUDPackage.CrosshairCenter = nullptr;
+		HUDPackage.CrosshairLeft = nullptr;
+		HUDPackage.CrosshairRight = nullptr;
+		HUDPackage.CrosshairTop = nullptr;
+		HUDPackage.CrosshairBottom = nullptr;
 	}
 
 	// Calcualte crosshair spread
@@ -141,9 +146,9 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 
 	CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 40.f);
 
-	HUDPackage.CrosshairSpread = 
+	HUDPackage.CrosshairSpread =
 		0.5f +
-		CrosshairVelocityFactor + 
+		CrosshairVelocityFactor +
 		CrosshairInAirFactor -
 		CrosshairAimFactor +
 		CrosshairShootingFactor;
@@ -254,7 +259,7 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 
 		if (IsValid(EquippedWeapon))
 		{
-			CrosshairShootingFactor =  0.75f;
+			CrosshairShootingFactor = 0.75f;
 		}
 	}
 }
@@ -314,5 +319,15 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& OutTraceHitResult)
 			end,
 			ECollisionChannel::ECC_Visibility
 		);
+
+		if (OutTraceHitResult.GetActor() &&
+			OutTraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::Red;
+		}
+		else
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::White;
+		}
 	}
 }

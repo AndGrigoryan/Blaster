@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "HUD/BlasterHUD.h"
+
+
 #include "CombatComponent.generated.h"
 
 
@@ -93,6 +96,7 @@ private:
 	float CrosshairAimFactor;
 	float CrosshairShootingFactor;
 
+	FHUDPackage HUDPackage;
 	/*
 	* Aiming and FOV
 	*/

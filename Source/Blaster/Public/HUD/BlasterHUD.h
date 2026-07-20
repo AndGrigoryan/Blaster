@@ -12,12 +12,26 @@ struct FHUDPackage
 	GENERATED_BODY()
 	
 public:
-	TObjectPtr<UTexture2D> CrosshairCenter;
-	TObjectPtr<UTexture2D> CrosshairLeft;
-	TObjectPtr<UTexture2D> CrosshairRight;
-	TObjectPtr<UTexture2D> CrosshairTop;
-	TObjectPtr<UTexture2D> CrosshairBottom;
-	float CrosshairSpread;
+	UPROPERTY();
+	TObjectPtr<UTexture2D> CrosshairCenter = nullptr;
+
+	UPROPERTY();
+	TObjectPtr<UTexture2D> CrosshairLeft = nullptr;
+
+	UPROPERTY();
+	TObjectPtr<UTexture2D> CrosshairRight = nullptr;
+
+	UPROPERTY();
+	TObjectPtr<UTexture2D> CrosshairTop = nullptr;
+
+	UPROPERTY();
+	TObjectPtr<UTexture2D> CrosshairBottom = nullptr;
+
+	UPROPERTY();
+	float CrosshairSpread = 0.f;
+
+	UPROPERTY();
+	FLinearColor CrosshairsColor = FLinearColor();
 };
 
 UCLASS()
@@ -36,5 +50,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax = 16.f;
 	
-	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, FVector2D Spread);
+	void DrawCrosshair
+	(
+		UTexture2D* Texture, 
+		FVector2D ViewportCenter, 
+		FVector2D Spread,
+		FLinearColor CrosshairColor
+	);
 };
