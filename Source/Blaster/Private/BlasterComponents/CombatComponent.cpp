@@ -20,6 +20,9 @@
 
 #include "HUD/BlasterHUD.h"
 
+#include "Camera/CameraComponent.h"
+
+
 UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -45,6 +48,12 @@ void UCombatComponent::BeginPlay()
 	if (IsValid(OwnerCharacter))
 	{
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+
+		if (IsValid(OwnerCharacter->GetFollowCamera()))
+		{
+			DefaultFOV = OwnerCharacter->GetFollowCamera()->FieldOfView;
+			CurrentFOV = DefaultFOV;
+		}
 	}
 }
 
@@ -52,13 +61,15 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	SetHUDCrosshairs(DeltaTime);
 
-	if(IsValid(OwnerCharacter) && OwnerCharacter->IsLocallyControlled())
+	if (IsValid(OwnerCharacter) && OwnerCharacter->IsLocallyControlled())
 	{
 		FHitResult hitResult;
 		TraceUnderCrosshairs(hitResult);
 		HitTarget = hitResult.ImpactPoint;
+
+		SetHUDCrosshairs(DeltaTime);
+		InterpFOV(DeltaTime);
 	}
 }
 
@@ -122,6 +133,40 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairInAirFactor;
 
 	HUD->SetHUDPackage(HUDPackage);
+}
+
+void UCombatComponent::InterpFOV(float DeltaTime)
+{
+	if (!IsValid(EquippedWeapon))
+	{
+		return;
+	}
+
+	if (bIsAiming)
+	{
+		CurrentFOV = FMath::FInterpTo
+		(
+			CurrentFOV,
+			EquippedWeapon->GetZoomedFOV(),
+			DeltaTime,
+			EquippedWeapon->GetZoomInterpSpeed()
+		);
+	}
+	else
+	{
+		CurrentFOV = FMath::FInterpTo
+		(
+			CurrentFOV,
+			DefaultFOV,
+			DeltaTime,
+			ZoomInterpSpeed
+		);
+	}
+
+	if (IsValid(OwnerCharacter) && IsValid(OwnerCharacter->GetFollowCamera()))
+	{
+		OwnerCharacter->GetFollowCamera()->SetFieldOfView(CurrentFOV);
+	}
 }
 
 void UCombatComponent::Init(ABlasterCharacter* InOwnerCharacter)
