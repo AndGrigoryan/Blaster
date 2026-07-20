@@ -12,6 +12,8 @@ class UInputAction;
 
 class AWeaponBase;
 
+class UAnimMontage;
+
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
@@ -140,6 +142,12 @@ public:
 	UFUNCTION()
 	void PlayFireMontage(bool bIsAiming);
 
+	UFUNCTION()
+	void PlayHitReactMontage();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UWidgetComponent> OverheadWidgetComponent;
@@ -151,7 +159,10 @@ private:
 	TObjectPtr<class UCombatComponent> CombatComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	TObjectPtr<class UAnimMontage> FireWeaponMontage;
+	TObjectPtr<UAnimMontage> FireWeaponMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 
 	float AO_Yaw;
 

@@ -25,6 +25,8 @@
 
 #include "Character/BlasterAnimInstance.h"
 
+#include "Blaster/Blaster.h"
+
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -51,9 +53,11 @@ ABlasterCharacter::ABlasterCharacter()
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 
@@ -382,13 +386,18 @@ void ABlasterCharacter::HideCameraIfCharacterClose()
 			(
 			IsValid(CombatComponent) &&
 			IsValid(CombatComponent->EquippedWeapon) &&
-			IsValid(CombatComponent->EquippedWeapon->GetWeaponMesh())
+			IsValid(CombatComponent->EquippedWeapon->GetWeaponMesh()) 
 			)
 		{
 			CombatComponent->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
 		}
 	}
 
+}
+
+void ABlasterCharacter::MulticastHit_Implementation()
+{
+	PlayHitReactMontage();
 }
 
 bool ABlasterCharacter::IsWeaponEquipped()
@@ -445,4 +454,30 @@ void ABlasterCharacter::PlayFireMontage(bool bIsAiming)
 
 	}
 
+}
+
+void ABlasterCharacter::PlayHitReactMontage()
+{
+	if
+		(
+		!IsValid(CombatComponent) ||
+		!IsValid(CombatComponent->EquippedWeapon)
+		)
+	{
+		return;
+	}
+
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+
+	if
+	(
+		IsValid(animInstance) &&
+		IsValid(HitReactMontage)
+	)
+	{
+		animInstance->Montage_Play(HitReactMontage);
+		FName sectionName("FromFront");
+		animInstance->Montage_JumpToSection(sectionName);
+
+	}
 }

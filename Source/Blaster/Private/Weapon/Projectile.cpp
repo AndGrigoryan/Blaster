@@ -11,6 +11,10 @@
 
 #include "Sound/SoundCue.h"
 
+#include "Character/BlasterCharacter.h"
+
+#include "Blaster/Blaster.h"
+
 AProjectile::AProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -24,6 +28,7 @@ AProjectile::AProjectile()
 	CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	CollisionBox->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Block);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
@@ -62,6 +67,13 @@ void AProjectile::OnHit
 	const FHitResult& Hit
 )
 {
+	ABlasterCharacter* blasterCharacter = Cast<ABlasterCharacter>(OtherActor);
+
+	if (IsValid(blasterCharacter))
+	{
+		blasterCharacter->MulticastHit();
+	}
+
 	Destroy();
 }
 
